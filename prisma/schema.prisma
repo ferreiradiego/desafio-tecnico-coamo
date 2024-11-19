@@ -14,8 +14,8 @@ enum Classificacao {
 }
 
 enum TipoCooperado {
-  Fisica
-  Juridica
+  PF
+  PJ
 }
 
 enum GrupoProduto {
@@ -34,25 +34,37 @@ model Unidade {
 }
 
 model Cooperado {
-  cooperado_id    Int           @id @default(autoincrement())
-  nome            String
-  classificacao   Classificacao
-  tipo            TipoCooperado
+  cooperado_id            Int                      @id @default(autoincrement())
+  nome                    String
+  classificacao           Classificacao
+  tipo                    TipoCooperado
+  CooperadoPessoaFisica   CooperadoPessoaFisica?
+  CooperadoPessoaJuridica CooperadoPessoaJuridica?
+  Venda                   Venda[]
+}
+
+model CooperadoPessoaFisica {
+  cooperado_id    Int       @id
   cpf             String
   rg              String
   estado_civil    String
   data_nascimento DateTime
-  data_fundacao   DateTime
-  Socio           Socio[]
-  Venda           Venda[]
+  Cooperado       Cooperado @relation(fields: [cooperado_id], references: [cooperado_id])
+}
+
+model CooperadoPessoaJuridica {
+  cooperado_id  Int       @id
+  data_fundacao DateTime
+  Cooperado     Cooperado @relation(fields: [cooperado_id], references: [cooperado_id])
+  Socio         Socio[]
 }
 
 model Socio {
-  socio_id      Int       @id @default(autoincrement())
-  cooperado_id  Int
-  nome          String
-  nacionalidade String
-  Cooperado     Cooperado @relation(fields: [cooperado_id], references: [cooperado_id])
+  socio_id                Int                     @id @default(autoincrement())
+  cooperado_juridico_id   Int
+  nome                    String
+  nacionalidade           String
+  CooperadoPessoaJuridica CooperadoPessoaJuridica @relation(fields: [cooperado_juridico_id], references: [cooperado_id])
 }
 
 model Produto {
