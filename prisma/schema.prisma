@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Classificacao {
+  A
+  B
+  C
+}
+
+enum TipoCooperado {
+  Fisica
+  Juridica
+}
+
+enum GrupoProduto {
+  Fertilizantes
+  Corretivos
+  Herbicidas
+  Fungicidas
+  Inseticidas
+}
+
+model Unidade {
+  unidade_id Int     @id @default(autoincrement())
+  nome       String
+  municipio  String
+  Venda      Venda[]
+}
+
+model Cooperado {
+  cooperado_id    Int           @id @default(autoincrement())
+  nome            String
+  classificacao   Classificacao
+  tipo            TipoCooperado
+  cpf             String
+  rg              String
+  estado_civil    String
+  data_nascimento DateTime
+  data_fundacao   DateTime
+  Socio           Socio[]
+  Venda           Venda[]
+}
+
+model Socio {
+  socio_id      Int       @id @default(autoincrement())
+  cooperado_id  Int
+  nome          String
+  nacionalidade String
+  Cooperado     Cooperado @relation(fields: [cooperado_id], references: [cooperado_id])
+}
+
+model Produto {
+  produto_id     Int          @id @default(autoincrement())
+  nome_comercial String
+  formula        String
+  unidade_medida String
+  grupo          GrupoProduto
+  ItemVenda      ItemVenda[]
+}
+
+model Venda {
+  venda_id     Int         @id @default(autoincrement())
+  cooperado_id Int
+  unidade_id   Int
+  data_venda   DateTime
+  Cooperado    Cooperado   @relation(fields: [cooperado_id], references: [cooperado_id])
+  Unidade      Unidade     @relation(fields: [unidade_id], references: [unidade_id])
+  ItemVenda    ItemVenda[]
+}
+
+model ItemVenda {
+  item_id        Int     @id @default(autoincrement())
+  venda_id       Int
+  produto_id     Int
+  quantidade     Int
+  preco_unitario Float
+  desconto       Float
+  icms_aplicado  Float
+  Venda          Venda   @relation(fields: [venda_id], references: [venda_id])
+  Produto        Produto @relation(fields: [produto_id], references: [produto_id])
+}
