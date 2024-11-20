@@ -5,6 +5,7 @@ import { calculateTotal } from "@/helpers/sale";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 
+// Adiciona uma nova venda ao banco de dados
 export const addSale = async (input: CreateSaleDto) => {
   const data: Prisma.VendaCreateInput = {
     cooperado: { connect: { cooperado_id: input.cooperado.cooperado_id } },

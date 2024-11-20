@@ -1,4 +1,9 @@
 import { CreateSaleDto } from "@/app/page";
+import {
+  INTEREST_RATE,
+  MEMBER_DISCOUNTS,
+  TECHNOLOGY_DISCOUNT_MAX,
+} from "@/constants";
 import { ConceitoCooperado, FormaPagamento } from "@prisma/client";
 import { differenceInBusinessDays } from "date-fns";
 
@@ -6,7 +11,7 @@ const calculateTechnologyDiscountPercentage = (
   items: CreateSaleDto["items"]
 ) => {
   const distinctGroups = new Set(items.map((item) => item.produto.grupo));
-  return Math.min(distinctGroups.size * 0.01, 0.05);
+  return Math.min(distinctGroups.size * 0.01, TECHNOLOGY_DISCOUNT_MAX);
 };
 
 const calculateMemberDiscountPercentage = (
@@ -16,15 +21,14 @@ const calculateMemberDiscountPercentage = (
   if (forma_pagamento === FormaPagamento.Prazo) return 0;
 
   return cooperado.conceito === ConceitoCooperado.A
-    ? 0.05
+    ? MEMBER_DISCOUNTS.A
     : cooperado.conceito === ConceitoCooperado.B
-    ? 0.03
-    : 0;
+    ? MEMBER_DISCOUNTS.B
+    : MEMBER_DISCOUNTS.C;
 };
 
 const calculateInterest = (value: number, days: number) => {
-  const interestRate = 0.05;
-  return value * ((1 + interestRate / 100) ** days - 1);
+  return value * ((1 + INTEREST_RATE / 100) ** days - 1);
 };
 
 const calculateTotal = (sale: CreateSaleDto) => {
