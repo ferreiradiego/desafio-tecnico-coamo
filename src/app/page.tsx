@@ -1,8 +1,17 @@
 import { getAllBranches } from "@/actions/get-all-branches";
 import { getAllMembers } from "@/actions/get-all-members";
 import { getAllProducts } from "@/actions/get-all-products";
+import { getICMSRate } from "@/actions/get-icms-rate";
 import SimulateSaleButton from "@/components/simulate-sale-button";
-import { Produto, Cooperado, Unidade, FormaPagamento } from "@prisma/client";
+import {
+  Produto,
+  Cooperado,
+  Unidade,
+  FormaPagamento,
+  FinalidadeTributacao,
+  GrupoProduto,
+  TipoCooperado,
+} from "@prisma/client";
 
 export type CreateSaleDto = {
   data_venda: Date;
@@ -26,6 +35,17 @@ const HomePage = async () => {
   if (!branches || !products || !members) {
     return <div>Carregando...</div>;
   }
+
+  const paramsICMS = {
+    finalidade: FinalidadeTributacao.Revenda,
+    ufOrigem: "PR",
+    ufConsumo: "PR",
+    grupoProduto: GrupoProduto.Fertilizantes,
+    tipoCooperado: TipoCooperado.PJ,
+  };
+
+  // Exemplo de uso da função getICMSRate para obter a alíquota de ICMS de acordo com os parâmetros
+  const icmsRate = await getICMSRate(paramsICMS);
 
   const saleDataPF: CreateSaleDto = {
     data_venda: new Date(),
