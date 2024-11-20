@@ -1,7 +1,7 @@
 "use client";
 
+import { CreateSaleDto } from "@/data";
 import { Button } from "./ui/button";
-import { CreateSaleDto } from "@/app/page";
 import { addSale } from "@/actions/add-sale";
 
 interface SimulateSaleButtonProps {

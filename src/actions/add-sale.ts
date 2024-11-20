@@ -1,6 +1,6 @@
 "use server";
 
-import { CreateSaleDto } from "@/app/page";
+import { CreateSaleDto } from "@/data";
 import { calculateTotal } from "@/helpers/sale";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";

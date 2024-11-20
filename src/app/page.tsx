@@ -3,29 +3,15 @@ import { getAllMembers } from "@/actions/get-all-members";
 import { getAllProducts } from "@/actions/get-all-products";
 import { getICMSRate } from "@/actions/get-icms-rate";
 import SimulateSaleButton from "@/components/simulate-sale-button";
+import { CreateSaleDto } from "@/data";
 import {
-  Produto,
-  Cooperado,
-  Unidade,
   FormaPagamento,
   FinalidadeTributacao,
   GrupoProduto,
-  TipoCooperado,
+  TipoCooperado
 } from "@prisma/client";
 
-export type CreateSaleDto = {
-  data_venda: Date;
-  cooperado: Cooperado;
-  unidade: Unidade;
-  items: {
-    quantidade: number;
-    desconto: number;
-    icms_aplicado: number;
-    produto: Produto;
-  }[];
-  forma_pagamento: FormaPagamento;
-  data_vencimento?: Date;
-};
+
 
 const HomePage = async () => {
   const branches = await getAllBranches();
@@ -48,7 +34,7 @@ const HomePage = async () => {
   const icmsRate = await getICMSRate(paramsICMS);
 
   const saleDataPF: CreateSaleDto = {
-    data_venda: new Date(),
+    data_venda: new Date("2024-11-20T19:46:13.000Z"),
     cooperado: members[1],
     unidade: branches[0],
     items: products.map((product) => ({
@@ -61,7 +47,7 @@ const HomePage = async () => {
   };
 
   const saleDataPJ: CreateSaleDto = {
-    data_venda: new Date(),
+    data_venda: new Date("2024-11-20T19:46:13.000Z"),
     cooperado: members[0],
     unidade: branches[0],
     items: products.map((product) => ({

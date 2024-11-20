@@ -1,9 +1,9 @@
-import { CreateSaleDto } from "@/app/page";
 import {
   INTEREST_RATE,
   MEMBER_DISCOUNTS,
   TECHNOLOGY_DISCOUNT_MAX,
 } from "@/constants";
+import { CreateSaleDto } from "@/data";
 import { ConceitoCooperado, FormaPagamento } from "@prisma/client";
 import { differenceInBusinessDays } from "date-fns";
 
@@ -74,21 +74,17 @@ const calculateTotal = (sale: CreateSaleDto) => {
     // TODO: Para simplificar, estou usando o id do produto como critério para definir o ICMS
     const icms = item.icms_aplicado * amountWithInterest;
 
+    // Lógica de bloqueio de venda caso o ICMS não seja calculado corretamente
+    if (icms === null || icms === undefined || isNaN(icms)) {
+      throw new Error(
+        `Erro no cálculo do ICMS para o produto ${item.produto.nome_comercial}. Operação bloqueada.`
+      );
+    }
+
     // Valor total do item com juros e ICMS
     const totalItem = amountWithInterest + icms;
 
     total += totalItem;
-
-    // console.log({
-    //   nome_comercial: item.produto.nome_comercial,
-    //   preco_base: baseAmount,
-    //   desconto_progressivo: tecnhologyDiscount,
-    //   desconto_adicional: memberDiscount,
-    //   preco_com_desconto: amountWithDiscounts,
-    //   juros: interest,
-    //   icms: icms,
-    //   preco_final: totalItem,
-    // });
   });
 
   return total;
