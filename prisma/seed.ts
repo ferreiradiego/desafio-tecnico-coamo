@@ -1,5 +1,6 @@
 import {
-  Classificacao,
+  ClassificacaoCooperado,
+  FinalidadeTributacao,
   GrupoProduto,
   PrismaClient,
   TipoCooperado,
@@ -8,7 +9,7 @@ import {
 const prisma = new PrismaClient();
 
 async function main() {
-  const unidade = await prisma.unidade.create({
+  await prisma.unidade.create({
     data: {
       nome: "Unidade X",
       municipio: "Toledo",
@@ -20,8 +21,8 @@ async function main() {
     data: {
       nome: "Empresa X",
       tipo: TipoCooperado.PJ,
-      classificacao: Classificacao.A,
-      CooperadoPessoaJuridica: {
+      classificacao: ClassificacaoCooperado.A,
+      cooperado_pj: {
         create: {
           data_fundacao: new Date("2000-01-01"),
         },
@@ -30,29 +31,32 @@ async function main() {
   });
 
   // Socio for Cooperado PJ
-  const socio = await prisma.socio.create({
+  await prisma.socio.create({
     data: {
-      cooperado_juridico_id: cooperadoPJ.cooperado_id,
+      cooperado_pj_id: cooperadoPJ.cooperado_id,
       nome: "Socio 1",
       nacionalidade: "Brasileiro",
     },
   });
 
-  console.log(
-    `${cooperadoPJ.nome} has been created with id ${cooperadoPJ.cooperado_id}.`
-  );
-  console.log(`${socio.nome} has been created with id ${socio.socio_id}.`);
+  await prisma.socio.create({
+    data: {
+      cooperado_pj_id: cooperadoPJ.cooperado_id,
+      nome: "Socio 2",
+      nacionalidade: "Argentino",
+    },
+  });
 
   // Cooperado PF
-  const cooperadoPF = await prisma.cooperado.create({
+  await prisma.cooperado.create({
     data: {
-      nome: "Pessoa Fisica Y",
+      nome: "Fulano de Tal",
       tipo: TipoCooperado.PF,
-      classificacao: Classificacao.B,
-      CooperadoPessoaFisica: {
+      classificacao: ClassificacaoCooperado.B,
+      cooperado_pf: {
         create: {
-          cpf: "12345678901",
-          rg: "MG1234567",
+          cpf: "242993242",
+          rg: "242993242",
           estado_civil: "Solteiro",
           data_nascimento: new Date("1990-01-01"),
         },
@@ -60,41 +64,54 @@ async function main() {
     },
   });
 
-  console.log(
-    `${cooperadoPF.nome} has been created with id ${cooperadoPF.cooperado_id}.`
-  );
-
-  const produto = await prisma.produto.create({
-    data: {
-      nome_comercial: "Produto 1",
-      formula: "Formula 1",
-      unidade_medida: "kg",
-      grupo: GrupoProduto.Fertilizantes,
-    },
+  // Produtos
+  await prisma.produto.createMany({
+    data: [
+      {
+        nome_comercial: "Fertilizante 1",
+        formula: "NPK 10-10-10",
+        unidade_medida: "kg",
+        preco_unitario: 100,
+        grupo: GrupoProduto.Fertilizantes,
+      },
+      {
+        nome_comercial: "Corretivo 1",
+        formula: "CaCO3",
+        unidade_medida: "kg",
+        preco_unitario: 50,
+        grupo: GrupoProduto.Corretivos,
+      },
+      {
+        nome_comercial: "Herbicida 1",
+        formula: "Herbicida 1",
+        unidade_medida: "kg",
+        preco_unitario: 200,
+        grupo: GrupoProduto.Herbicidas,
+      },
+    ],
   });
 
-  const venda = await prisma.venda.create({
-    data: {
-      cooperado_id: cooperadoPJ.cooperado_id,
-      unidade_id: unidade.unidade_id,
-      data_venda: new Date(),
-    },
+  // Tributação
+  await prisma.tributacao.createMany({
+    data: [
+      {
+        finalidade: FinalidadeTributacao.Revenda,
+        uf_origem: "PR",
+        uf_consumo: "PR",
+        grupo_produto: GrupoProduto.Fertilizantes,
+        tipo_cooperado: TipoCooperado.PJ,
+        aliquota_icms: 0.12,
+      },
+      {
+        finalidade: FinalidadeTributacao.Revenda,
+        uf_origem: "PR",
+        uf_consumo: "PR",
+        grupo_produto: GrupoProduto.Corretivos,
+        tipo_cooperado: TipoCooperado.PJ,
+        aliquota_icms: 0.18,
+      },
+    ],
   });
-
-  const itemVenda = await prisma.itemVenda.create({
-    data: {
-      venda_id: venda.venda_id,
-      produto_id: produto.produto_id,
-      quantidade: 10,
-      preco_unitario: 100.0,
-      desconto: 5.0,
-      icms_aplicado: 18.0,
-    },
-  });
-
-  console.log(
-    `${itemVenda.produto_id} has been created with id ${itemVenda.item_id}.`
-  );
 
   console.log("Database has been seeded.");
 }

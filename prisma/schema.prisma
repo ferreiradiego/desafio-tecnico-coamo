@@ -7,7 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Classificacao {
+enum ClassificacaoCooperado {
   A
   B
   C
@@ -26,21 +26,31 @@ enum GrupoProduto {
   Inseticidas
 }
 
+enum FinalidadeTributacao {
+  Revenda
+  UsoProprio
+}
+
+enum FormaPagamento {
+  Vista
+  Prazo
+}
+
 model Unidade {
   unidade_id Int     @id @default(autoincrement())
   nome       String
   municipio  String
-  Venda      Venda[]
+  vendas     Venda[]
 }
 
 model Cooperado {
-  cooperado_id            Int                      @id @default(autoincrement())
-  nome                    String
-  classificacao           Classificacao
-  tipo                    TipoCooperado
-  CooperadoPessoaFisica   CooperadoPessoaFisica?
-  CooperadoPessoaJuridica CooperadoPessoaJuridica?
-  Venda                   Venda[]
+  cooperado_id  Int                      @id @default(autoincrement())
+  nome          String
+  classificacao ClassificacaoCooperado
+  tipo          TipoCooperado
+  cooperado_pf  CooperadoPessoaFisica?
+  cooperado_pj  CooperadoPessoaJuridica?
+  vendas        Venda[]
 }
 
 model CooperadoPessoaFisica {
@@ -49,22 +59,22 @@ model CooperadoPessoaFisica {
   rg              String
   estado_civil    String
   data_nascimento DateTime
-  Cooperado       Cooperado @relation(fields: [cooperado_id], references: [cooperado_id])
+  cooperado       Cooperado @relation(fields: [cooperado_id], references: [cooperado_id])
 }
 
 model CooperadoPessoaJuridica {
   cooperado_id  Int       @id
   data_fundacao DateTime
-  Cooperado     Cooperado @relation(fields: [cooperado_id], references: [cooperado_id])
-  Socio         Socio[]
+  cooperado     Cooperado @relation(fields: [cooperado_id], references: [cooperado_id])
+  socios        Socio[]
 }
 
 model Socio {
-  socio_id                Int                     @id @default(autoincrement())
-  cooperado_juridico_id   Int
-  nome                    String
-  nacionalidade           String
-  CooperadoPessoaJuridica CooperadoPessoaJuridica @relation(fields: [cooperado_juridico_id], references: [cooperado_id])
+  socio_id        Int                     @id @default(autoincrement())
+  cooperado_pj_id Int
+  nome            String
+  nacionalidade   String
+  cooperado_pj    CooperadoPessoaJuridica @relation(fields: [cooperado_pj_id], references: [cooperado_id])
 }
 
 model Produto {
@@ -72,28 +82,41 @@ model Produto {
   nome_comercial String
   formula        String
   unidade_medida String
+  preco_unitario Decimal      @db.Decimal(10, 2)
   grupo          GrupoProduto
-  ItemVenda      ItemVenda[]
+  items          ItemVenda[]
 }
 
 model Venda {
-  venda_id     Int         @id @default(autoincrement())
-  cooperado_id Int
-  unidade_id   Int
-  data_venda   DateTime
-  Cooperado    Cooperado   @relation(fields: [cooperado_id], references: [cooperado_id])
-  Unidade      Unidade     @relation(fields: [unidade_id], references: [unidade_id])
-  ItemVenda    ItemVenda[]
+  venda_id        Int            @id @default(autoincrement())
+  cooperado_id    Int
+  unidade_id      Int
+  data_venda      DateTime
+  items           ItemVenda[]
+  forma_pagamento FormaPagamento
+  data_vencimento DateTime?
+  valor_total     Decimal        @db.Decimal(10, 2)
+  cooperado       Cooperado      @relation(fields: [cooperado_id], references: [cooperado_id])
+  unidade         Unidade        @relation(fields: [unidade_id], references: [unidade_id])
 }
 
 model ItemVenda {
-  item_id        Int     @id @default(autoincrement())
-  venda_id       Int
-  produto_id     Int
-  quantidade     Int
-  preco_unitario Float
-  desconto       Float
-  icms_aplicado  Float
-  Venda          Venda   @relation(fields: [venda_id], references: [venda_id])
-  Produto        Produto @relation(fields: [produto_id], references: [produto_id])
+  item_id       Int     @id @default(autoincrement())
+  venda_id      Int
+  produto_id    Int
+  quantidade    Int
+  desconto      Decimal @db.Decimal(10, 2)
+  icms_aplicado Decimal @db.Decimal(10, 2)
+  venda         Venda   @relation(fields: [venda_id], references: [venda_id])
+  produto       Produto @relation(fields: [produto_id], references: [produto_id])
+}
+
+model Tributacao {
+  tributacao_id  Int                  @id @default(autoincrement())
+  finalidade     FinalidadeTributacao
+  uf_origem      String
+  uf_consumo     String
+  grupo_produto  GrupoProduto
+  tipo_cooperado TipoCooperado
+  aliquota_icms  Decimal              @db.Decimal(5, 2)
 }
