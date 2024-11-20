@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "ClassificacaoCooperado" AS ENUM ('A', 'B', 'C');
+CREATE TYPE "ConceitoCooperado" AS ENUM ('A', 'B', 'C');
 
 -- CreateEnum
 CREATE TYPE "TipoCooperado" AS ENUM ('PF', 'PJ');
@@ -26,7 +26,7 @@ CREATE TABLE "Unidade" (
 CREATE TABLE "Cooperado" (
     "cooperado_id" SERIAL NOT NULL,
     "nome" TEXT NOT NULL,
-    "classificacao" "ClassificacaoCooperado" NOT NULL,
+    "conceito" "ConceitoCooperado" NOT NULL,
     "tipo" "TipoCooperado" NOT NULL,
 
     CONSTRAINT "Cooperado_pkey" PRIMARY KEY ("cooperado_id")
@@ -81,6 +81,7 @@ CREATE TABLE "Venda" (
     "data_venda" TIMESTAMP(3) NOT NULL,
     "forma_pagamento" "FormaPagamento" NOT NULL,
     "data_vencimento" TIMESTAMP(3),
+    "valor_total" DECIMAL(10,2) NOT NULL,
 
     CONSTRAINT "Venda_pkey" PRIMARY KEY ("venda_id")
 );

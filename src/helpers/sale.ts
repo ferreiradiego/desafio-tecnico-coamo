@@ -1,5 +1,5 @@
 import { CreateSaleDto } from "@/app/page";
-import { ClassificacaoCooperado, FormaPagamento } from "@prisma/client";
+import { ConceitoCooperado, FormaPagamento } from "@prisma/client";
 import { differenceInBusinessDays } from "date-fns";
 
 const calculateTechnologyDiscountPercentage = (
@@ -15,9 +15,9 @@ const calculateMemberDiscountPercentage = (
 ) => {
   if (forma_pagamento === FormaPagamento.Prazo) return 0;
 
-  return cooperado.classificacao === ClassificacaoCooperado.A
+  return cooperado.conceito === ConceitoCooperado.A
     ? 0.05
-    : cooperado.classificacao === ClassificacaoCooperado.B
+    : cooperado.conceito === ConceitoCooperado.B
     ? 0.03
     : 0;
 };
@@ -39,7 +39,7 @@ const calculateTotal = (sale: CreateSaleDto) => {
     // Valor base do item (quantidade * preço unitário)
     const baseAmount = item.quantidade * Number(item.produto.preco_unitario);
 
-    // Desconto adicional do cooperado baseado na sua classificação (A, B, C) em (%)
+    // Desconto adicional do cooperado baseado no seu conceito (A, B, C) em (%)
     const memberDiscountPercentage = calculateMemberDiscountPercentage(
       forma_pagamento,
       cooperado

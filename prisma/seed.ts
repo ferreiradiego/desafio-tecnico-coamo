@@ -1,5 +1,5 @@
 import {
-  ClassificacaoCooperado,
+  ConceitoCooperado,
   FinalidadeTributacao,
   GrupoProduto,
   PrismaClient,
@@ -21,7 +21,7 @@ async function main() {
     data: {
       nome: "Empresa X",
       tipo: TipoCooperado.PJ,
-      classificacao: ClassificacaoCooperado.A,
+      conceito: ConceitoCooperado.A,
       cooperado_pj: {
         create: {
           data_fundacao: new Date("2000-01-01"),
@@ -52,7 +52,7 @@ async function main() {
     data: {
       nome: "Fulano de Tal",
       tipo: TipoCooperado.PF,
-      classificacao: ClassificacaoCooperado.B,
+      conceito: ConceitoCooperado.B,
       cooperado_pf: {
         create: {
           cpf: "242993242",

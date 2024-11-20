@@ -7,7 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum ClassificacaoCooperado {
+enum ConceitoCooperado {
   A
   B
   C
@@ -44,13 +44,13 @@ model Unidade {
 }
 
 model Cooperado {
-  cooperado_id  Int                      @id @default(autoincrement())
-  nome          String
-  classificacao ClassificacaoCooperado
-  tipo          TipoCooperado
-  cooperado_pf  CooperadoPessoaFisica?
-  cooperado_pj  CooperadoPessoaJuridica?
-  vendas        Venda[]
+  cooperado_id Int                      @id @default(autoincrement())
+  nome         String
+  conceito     ConceitoCooperado
+  tipo         TipoCooperado
+  cooperado_pf CooperadoPessoaFisica?
+  cooperado_pj CooperadoPessoaJuridica?
+  vendas       Venda[]
 }
 
 model CooperadoPessoaFisica {
