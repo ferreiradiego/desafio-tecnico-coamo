@@ -1,6 +1,8 @@
 # Desafio Técnico - Coamo
 
-## Dados utilizados de exemplo
+## Modelagem do Banco de Dados
+
+[Modelagem do Banco de Dados](https://dbdiagram.io/d/desafio-coamo-673d0a10e9daa85aca07517c)
 
 ## Comparação de Exemplos de Cálculo de Venda
 
